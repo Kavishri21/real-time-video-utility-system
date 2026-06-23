@@ -1,0 +1,47 @@
+# ==========================================
+# YouTube Content Quality Analyzer - Git Ignore
+# ==========================================
+
+# IDE & OS files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+Thumbs.db
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+credentials.json
+
+# --- Python Service ---
+python_service/venv/
+python_service/env/
+python_service/__pycache__/
+python_service/**/*.pyc
+python_service/**/*.pyo
+python_service/**/*.pyd
+python_service/.pytest_cache/
+python_service/.ipynb_checkpoints/
+
+# --- Spring Boot Backend ---
+spring_boot_backend/target/
+spring_boot_backend/*.iml
+spring_boot_backend/.mvn/
+spring_boot_backend/mvnw
+spring_boot_backend/mvnw.cmd
+spring_boot_backend/.classpath
+spring_boot_backend/.project
+spring_boot_backend/.settings/
+
+# --- Chrome Extension ---
+# (Usually extension files are static and tracked, but avoid zip builds)
+chrome_extension/*.zip
+chrome_extension/*.crx

@@ -1,0 +1,310 @@
+# "Learn More" Feature — Implementation Plan
+
+## Goal
+
+Add a **"📘 Learn More"** button to the existing sidebar panel on YouTube. When clicked, it opens a **new browser tab** with a full-page learning dashboard containing 4 sections: Topic Overview, Related Videos, Learning Roadmap, and Official Resources.
+
+---
+
+## User Flow
+
+```
+User is on YouTube watching "Node.js & Express.js Full Course"
+     │
+     ▼
+User clicks "🔍 Analyze Video Quality" (existing feature)
+     │
+     ▼
+Sidebar shows scores, charts, etc. (existing feature)
+Now a new "📘 Learn More" button appears below the "Re-Analyze" button
+     │
+     ▼
+User clicks "📘 Learn More"
+     │
+     ▼
+New browser tab opens: learn.html?title=Node.js+Express.js+Full+Course&videoId=xxx
+     │
+     ▼
+The page shows a loading state, then renders all 4 sections:
+     ├── 📖 Topic Overview (from Wikipedia)
+     ├── 🎥 Related Videos + Quality Scores (from YouTube Search + AI)
+     ├── 🗺️ Learning Roadmap (from Gemini AI)
+     └── 📚 Official Resources (from Gemini AI)
+```
+
+---
+
+## Architecture
+
+```
+┌──────────────────────┐
+│    learn.html         │  ← New tab opened by extension
+│    (New Tab Page)     │
+└──────────┬───────────┘
+           │ POST /learnMore { "title": "Node.js...", "videoId": "xxx" }
+           ▼
+┌──────────────────────┐
+│   Spring Boot         │
+│   /learnMore endpoint │
+│   (Orchestrator)      │
+└──────────┬───────────┘
+           │
+     ┌─────┼──────────────────┐
+     │     │                  │
+     ▼     ▼                  ▼
+┌────────┐ ┌──────────┐ ┌──────────────┐
+│ Python │ │ YouTube  │ │  Wikipedia   │
+│ Service│ │ Search   │ │  API (free)  │
+│        │ │ API      │ │              │
+│ Gemini │ │ (Finds   │ │  (Topic      │
+│ AI for │ │ related  │ │  summary)    │
+│ roadmap│ │ videos)  │ │              │
+│ + res  │ │          │ │              │
+└────────┘ └──────────┘ └──────────────┘
+```
+
+---
+
+## Proposed Changes — File by File
+
+---
+
+### Layer 1: Chrome Extension
+
+#### [MODIFY] content.js
+- After analysis completes, show a **"📘 Learn More"** button in the sidebar panel (below "Re-Analyze Video")
+- When clicked, it opens a new tab: `chrome.runtime.getURL("learn.html") + "?title=...&videoId=..."`
+- The video title is grabbed from YouTube's DOM: `document.querySelector('yt-formatted-string.ytd-watch-metadata')?.textContent` or `document.title`
+
+#### [MODIFY] manifest.json
+- Add `learn.html`, `learn.js`, `learn.css` to the extension's `web_accessible_resources` so the new tab page can load
+
+#### [NEW] learn.html
+The new tab page. Structure:
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  Header: "📘 Learn More: Node.js & Express.js"          │
+│  Subtitle: "Based on: [video title]"                    │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  📖 TOPIC OVERVIEW                                       │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │ Node.js is an open-source, cross-platform          │  │
+│  │ JavaScript runtime environment that executes       │  │
+│  │ JavaScript code outside a web browser...           │  │
+│  │                                                    │  │
+│  │ [Wikipedia link: Read more →]                      │  │
+│  └────────────────────────────────────────────────────┘  │
+│                                                          │
+│  🎥 RELATED VIDEOS + QUALITY COMPARISON                  │
+│  ┌──────────────────┐ ┌──────────────────┐              │
+│  │ 🟢 82 - Mosh     │ │ 🟢 78 - Traversy │              │
+│  │ Node Tutorial    │ │ Node Crash Course│              │
+│  │ [Watch →]        │ │ [Watch →]        │              │
+│  └──────────────────┘ └──────────────────┘              │
+│  ┌──────────────────┐ ┌──────────────────┐              │
+│  │ 🟡 55 - TechGuru │ │ 🔴 32 - RandomCh │              │
+│  │ Learn Node 1hr   │ │ Node.js Tricks   │              │
+│  └──────────────────┘ └──────────────────┘              │
+│                                                          │
+│  🗺️ LEARNING ROADMAP                                     │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │  ① HTML & CSS ──→ ② JavaScript ──→ ③ Node.js      │  │
+│  │       ──→ ④ Express.js ──→ ⑤ MongoDB ──→           │  │
+│  │       ⑥ REST APIs ──→ ⑦ Authentication ──→         │  │
+│  │       ⑧ Deploy to Production                       │  │
+│  └────────────────────────────────────────────────────┘  │
+│      Generated by Gemini AI                              │
+│                                                          │
+│  📚 OFFICIAL RESOURCES                                   │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │ 📄 Node.js Official Docs    → nodejs.org/docs      │  │
+│  │ 📘 Express.js Guide         → expressjs.com        │  │
+│  │ 📗 MDN JavaScript Reference → developer.mozilla... │  │
+│  │ 💻 GitHub Repository        → github.com/nodejs    │  │
+│  └────────────────────────────────────────────────────┘  │
+│      Generated by Gemini AI                              │
+│                                                          │
+│  Footer: "Powered by Wikipedia API + Gemini AI"          │
+└──────────────────────────────────────────────────────────┘
+```
+
+#### [NEW] learn.js
+- Reads `title` and `videoId` from URL query parameters
+- Sends `POST http://localhost:8080/learnMore` with `{ "title": "...", "videoId": "..." }`
+- Receives the full response and renders all 4 sections
+- Shows loading spinners per-section (they can load at different speeds)
+
+#### [NEW] learn.css
+- Full-page styling, dark mode via `prefers-color-scheme: dark`
+- Clean, modern layout (NOT injected into YouTube — this is our own page)
+- Card-based sections with subtle shadows
+- Roadmap rendered as a horizontal step-by-step with numbered circles and arrows
+- Related videos as a 2×2 or 3-column grid of cards with color-coded score badges
+
+---
+
+### Layer 2: Spring Boot Backend
+
+#### [NEW] LearnMoreController.java
+- `@PostMapping("/learnMore")` endpoint
+- Receives `{ "title": "Node.js & Express.js Full Course", "videoId": "xxx" }`
+- Orchestrates 3 parallel tasks:
+  1. Calls Python `/learnMore` endpoint (for Gemini roadmap + resources)
+  2. Calls Wikipedia API directly from Java (simple GET request)
+  3. Calls YouTube Search API to find related videos, then quick-analyzes each
+
+#### [NEW] LearnMoreResponse.java (DTO)
+Fields:
+```
+String topicTitle             — cleaned topic name
+String topicSummary           — from Wikipedia
+String topicImageUrl          — from Wikipedia (thumbnail)
+String wikipediaUrl           — link to full article
+
+List<RelatedVideo> relatedVideos — each has: title, videoId, channelName, 
+                                   thumbnailUrl, qualityScore, verdict
+
+List<String> roadmapSteps     — ordered learning steps from Gemini
+String roadmapRawText         — full Gemini response for display
+
+List<Resource> officialResources — each has: title, url, type (docs/github/tutorial)
+```
+
+#### [NEW] RelatedVideo.java (DTO)
+```
+String title
+String videoId
+String channelName
+String thumbnailUrl
+double qualityScore
+String verdict
+```
+
+#### [NEW] Resource.java (DTO)
+```
+String title
+String url
+String type        — "documentation", "github", "tutorial", "article"
+String description — one-line description
+```
+
+#### [MODIFY] application.properties
+Add:
+```
+gemini.api.key=YOUR_GEMINI_API_KEY
+gemini.api.url=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+wikipedia.api.url=https://en.wikipedia.org/api/rest_v1/page/summary/
+```
+
+---
+
+### Layer 3: Python AI Service
+
+#### [MODIFY] main.py — Add new endpoint
+
+**New endpoint:** `POST /learnMore`
+
+Receives: `{ "title": "Node.js & Express.js Full Course in Tamil" }`
+
+**What it does:**
+
+**Step 1: Extract keywords from title**
+- Remove filler words ("Full Course", "Tutorial", "in Tamil", "for Beginners", "2024", etc.)
+- Extract the core topic(s): `["Node.js", "Express.js"]`
+
+**Step 2: Call Gemini API for Learning Roadmap**
+- Prompt:
+  > *"Given the topic: 'Node.js and Express.js', provide a learning roadmap of 6-8 steps. Each step should be a short phrase (3-6 words). Return ONLY a numbered list, no extra text."*
+
+- Gemini returns:
+  ```
+  1. JavaScript Fundamentals
+  2. Node.js Core Concepts
+  3. NPM and Package Management
+  4. Express.js Basics
+  5. Routes and Middleware
+  6. MongoDB Database Integration
+  7. REST API Development
+  8. Deployment and Production
+  ```
+
+**Step 3: Call Gemini API for Official Resources**
+- Prompt:
+  > *"For someone learning 'Node.js and Express.js', suggest 4-6 official learning resources. For each, provide: title, URL, and a one-line description. Return as a numbered list in format: Title | URL | Description"*
+
+- Gemini returns structured resource list
+
+**Returns:**
+```json
+{
+  "extractedTopics": ["Node.js", "Express.js"],
+  "roadmapSteps": ["JavaScript Fundamentals", "Node.js Core Concepts", ...],
+  "resources": [
+    { "title": "Node.js Docs", "url": "https://nodejs.org/docs", "description": "Official API reference" },
+    ...
+  ]
+}
+```
+
+---
+
+### Layer 4: Wikipedia API (called from Spring Boot)
+
+**No setup needed** — completely free, no API key.
+
+Spring Boot directly calls:
+```
+GET https://en.wikipedia.org/api/rest_v1/page/summary/Node.js
+```
+
+Returns:
+```json
+{
+  "title": "Node.js",
+  "extract": "Node.js is an open-source, cross-platform JavaScript runtime...",
+  "thumbnail": { "source": "https://upload.wikimedia.org/..." },
+  "content_urls": { "desktop": { "page": "https://en.wikipedia.org/wiki/Node.js" } }
+}
+```
+
+If the first topic keyword doesn't match, try the next one. If none match, skip this section gracefully.
+
+---
+
+## Execution Order
+
+| Step | What | Layer |
+|---|---|---|
+| 1 | Add Gemini API key to `application.properties` | Spring Boot config |
+| 2 | Create `LearnMoreResponse`, `RelatedVideo`, `Resource` DTOs | Spring Boot |
+| 3 | Add `/learnMore` endpoint to Python with Gemini integration | Python |
+| 4 | Create `LearnMoreController` with Wikipedia + YouTube Search + Python orchestration | Spring Boot |
+| 5 | Build `learn.html` + `learn.css` + `learn.js` (the new tab page) | Extension |
+| 6 | Add "Learn More" button to `content.js` sidebar panel | Extension |
+| 7 | Update `manifest.json` for new files | Extension |
+| 8 | End-to-end test | All |
+
+---
+
+## API Keys Needed
+
+| API | Key Status | Cost |
+|---|---|---|
+| YouTube Data API v3 | ✅ Already have | Free (10,000 units/day) |
+| Wikipedia REST API | ✅ No key needed | Completely free |
+| Gemini API | 🔲 Need from user | Free tier: 60 requests/min |
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **1. Gemini API Key:** Please get a free API key from [Google AI Studio](https://aistudio.google.com/apikey). You just need a Google account. Share the key with me when ready.
+
+> [!IMPORTANT]
+> **2. Related Videos Quick-Analysis:** When we find 4-5 related videos via YouTube Search, should I do a **full analysis** (fetch 10 comments each → run through Python AI) or a **quick analysis** (fetch 3-5 comments each → lighter analysis)? Full is more accurate but slower (~10-15 seconds). Quick takes ~3-5 seconds.
+
+> [!NOTE]
+> **3. Design preference:** For the learn.html page, would you prefer a **dark theme** (matching YouTube dark mode) or a **light/white theme** (like a documentation page)? Or should it auto-detect?

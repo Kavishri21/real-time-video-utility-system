@@ -1,0 +1,498 @@
+/* ═══════════════════════════════════════════════════════════
+   YouTube Content Quality Analyzer — V2 Dashboard Styles
+   Panel 1: Right sidebar (score, summary, aspects)
+   Panel 2: Below video (charts, comments, keywords)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── PANEL 1: RIGHT SIDEBAR ── */
+#quality-analyzer-panel {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+    font-family: 'Roboto', 'Inter', -apple-system, sans-serif;
+    color: #0f0f0f;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid #e5e5e5;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+html[dark] #quality-analyzer-panel {
+    background-color: #212121;
+    color: #f1f1f1;
+    border-color: #383838;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ── PANEL 2: BELOW VIDEO ── */
+#qa-below-panel {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    font-family: 'Roboto', 'Inter', -apple-system, sans-serif;
+    color: #0f0f0f;
+    border: 1px solid #e5e5e5;
+    overflow: hidden;
+    margin: 16px 0 24px 0;
+    animation: qa-fadeIn 0.3s ease-out;
+}
+html[dark] #qa-below-panel {
+    background-color: #212121;
+    color: #f1f1f1;
+    border-color: #383838;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Header ── */
+#qa-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #cc0000, #e60000);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+#qa-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#qa-header-icon {
+    font-size: 18px;
+}
+#qa-close-btn {
+    cursor: pointer;
+    color: rgba(255,255,255,0.8);
+    font-size: 20px;
+    line-height: 1;
+    transition: color 0.2s;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+#qa-close-btn:hover {
+    color: white;
+    background: rgba(255,255,255,0.15);
+}
+
+/* ── Analyze Button ── */
+#qa-analyze-btn {
+    background-color: #cc0000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 16px;
+    text-align: center;
+    letter-spacing: 0.3px;
+}
+#qa-analyze-btn:hover {
+    background-color: #e60000;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(204, 0, 0, 0.3);
+}
+#qa-analyze-btn:disabled {
+    background-color: #606060;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ── Learn More Button ── */
+#qa-learn-btn {
+    background-color: #065fd4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 16px 16px 16px;
+    text-align: center;
+    letter-spacing: 0.3px;
+}
+#qa-learn-btn:hover {
+    background-color: #1a73e8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(6, 95, 212, 0.3);
+}
+html[dark] #qa-learn-btn {
+    background-color: #3ea6ff;
+    color: #0f0f0f;
+}
+html[dark] #qa-learn-btn:hover {
+    background-color: #65b8ff;
+}
+
+/* ── Loading State ── */
+.qa-loading {
+    text-align: center;
+    font-size: 14px;
+    color: #606060;
+    display: none;
+    padding: 40px 16px;
+}
+html[dark] .qa-loading { color: #aaa; }
+
+.qa-loading-spinner {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e5e5e5;
+    border-top: 3px solid #cc0000;
+    border-radius: 50%;
+    animation: qa-spin 0.8s linear infinite;
+    margin-bottom: 12px;
+}
+html[dark] .qa-loading-spinner { border-color: #444; border-top-color: #ff4444; }
+
+@keyframes qa-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Results Container (sidebar) ── */
+#qa-results {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* ── Section base ── */
+.qa-section {
+    padding: 16px;
+    border-bottom: 1px solid #e5e5e5;
+}
+html[dark] .qa-section { border-bottom-color: #383838; }
+
+.qa-section:last-child {
+    border-bottom: none;
+}
+
+.qa-section-no-border {
+    border-bottom: none !important;
+}
+
+.qa-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #606060;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+}
+html[dark] .qa-section-title { color: #aaa; }
+
+/* ═══════════════════════════════════════════
+   SECTION: Score Hero (Sidebar)
+   ═══════════════════════════════════════════ */
+.qa-score-hero {
+    padding: 24px 16px;
+    text-align: center;
+    background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+    border-bottom: 1px solid #e5e5e5;
+}
+html[dark] .qa-score-hero {
+    background: linear-gradient(180deg, #282828 0%, #212121 100%);
+    border-bottom-color: #383838;
+}
+
+.qa-score-gauge-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 16px auto;
+}
+.qa-score-gauge-canvas {
+    width: 140px;
+    height: 140px;
+}
+.qa-score-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    font-weight: 700;
+    color: #0f0f0f;
+}
+html[dark] .qa-score-number { color: #f1f1f1; }
+
+.qa-verdict-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+.qa-verdict-high { background: #e6f4ea; color: #137333; }
+html[dark] .qa-verdict-high { background: rgba(19, 115, 51, 0.2); color: #81c995; }
+.qa-verdict-medium { background: #fef7e0; color: #b05d00; }
+html[dark] .qa-verdict-medium { background: rgba(176, 93, 0, 0.2); color: #fdd663; }
+.qa-verdict-low { background: #fce8e6; color: #c5221f; }
+html[dark] .qa-verdict-low { background: rgba(197, 34, 31, 0.2); color: #f28b82; }
+
+.qa-trust-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #606060;
+}
+html[dark] .qa-trust-row { color: #aaa; }
+
+.qa-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.qa-trust-icon { font-size: 14px; }
+
+/* ═══════════════════════════════════════════
+   SECTION: AI Summary (Sidebar)
+   ═══════════════════════════════════════════ */
+.qa-summary-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #333;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 3px solid #065fd4;
+}
+html[dark] .qa-summary-text {
+    background: #2a2a2a;
+    color: #ddd;
+    border-left-color: #3ea6ff;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION: Aspect Metrics (Sidebar)
+   ═══════════════════════════════════════════ */
+.qa-metric {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+.qa-metric:last-child { margin-bottom: 0; }
+
+.qa-metric-label {
+    width: 80px;
+    font-weight: 500;
+    color: #0f0f0f;
+}
+html[dark] .qa-metric-label { color: #f1f1f1; }
+
+.qa-metric-bar-bg {
+    flex: 1;
+    height: 8px;
+    background-color: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+}
+html[dark] .qa-metric-bar-bg { background-color: #3a3a3a; }
+
+.qa-metric-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.qa-bar-clarity { background: linear-gradient(90deg, #065fd4, #3ea6ff); }
+.qa-bar-depth { background: linear-gradient(90deg, #8430ce, #c58af9); }
+.qa-bar-engagement { background: linear-gradient(90deg, #d93025, #f28b82); }
+
+.qa-metric-value {
+    width: 36px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 13px;
+    color: #0f0f0f;
+}
+html[dark] .qa-metric-value { color: #f1f1f1; }
+
+/* ═══════════════════════════════════════════
+   SECTION: Charts — Below Video
+   ═══════════════════════════════════════════ */
+.qa-charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.qa-chart-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 14px;
+    border: 1px solid #e5e5e5;
+}
+html[dark] .qa-chart-card {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+}
+
+.qa-chart-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #606060;
+    margin-bottom: 8px;
+    text-align: center;
+}
+html[dark] .qa-chart-label { color: #aaa; }
+
+.qa-chart-canvas {
+    width: 100% !important;
+    height: 160px !important;
+}
+
+.qa-trend-indicator {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.qa-trend-improving { color: #137333; }
+.qa-trend-stable { color: #b05d00; }
+.qa-trend-declining { color: #c5221f; }
+html[dark] .qa-trend-improving { color: #81c995; }
+html[dark] .qa-trend-stable { color: #fdd663; }
+html[dark] .qa-trend-declining { color: #f28b82; }
+
+/* ═══════════════════════════════════════════
+   SECTION: Top Comments — Below Video
+   ═══════════════════════════════════════════ */
+.qa-comments-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.qa-comment-card {
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    border-left: 4px solid;
+}
+
+.qa-comment-positive {
+    background: #e6f4ea;
+    border-left-color: #137333;
+    color: #0f0f0f;
+}
+html[dark] .qa-comment-positive {
+    background: rgba(19, 115, 51, 0.15);
+    border-left-color: #81c995;
+    color: #e0e0e0;
+}
+
+.qa-comment-negative {
+    background: #fce8e6;
+    border-left-color: #c5221f;
+    color: #0f0f0f;
+}
+html[dark] .qa-comment-negative {
+    background: rgba(197, 34, 31, 0.15);
+    border-left-color: #f28b82;
+    color: #e0e0e0;
+}
+
+.qa-comment-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.qa-comment-positive .qa-comment-label { color: #137333; }
+.qa-comment-negative .qa-comment-label { color: #c5221f; }
+html[dark] .qa-comment-positive .qa-comment-label { color: #81c995; }
+html[dark] .qa-comment-negative .qa-comment-label { color: #f28b82; }
+
+.qa-comment-text {
+    font-style: italic;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION: Keywords — Below Video
+   ═══════════════════════════════════════════ */
+.qa-keywords-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.qa-keyword-tag {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #e8f0fe;
+    color: #1a73e8;
+    border: 1px solid #d2e3fc;
+    transition: background 0.2s;
+    cursor: default;
+}
+.qa-keyword-tag:hover {
+    background: #d2e3fc;
+}
+html[dark] .qa-keyword-tag {
+    background: rgba(138, 180, 248, 0.12);
+    color: #8ab4f8;
+    border-color: rgba(138, 180, 248, 0.2);
+}
+html[dark] .qa-keyword-tag:hover {
+    background: rgba(138, 180, 248, 0.2);
+}
+
+/* ═══════════════════════════════════════════
+   SECTION: Meta Footer — Below Video
+   ═══════════════════════════════════════════ */
+.qa-meta-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #909090;
+    padding: 10px 16px;
+    background: #fafafa;
+    border-top: 1px solid #e5e5e5;
+}
+html[dark] .qa-meta-footer {
+    background: #1a1a1a;
+    border-top-color: #383838;
+    color: #717171;
+}
+
+/* ═══════════════════════════════════════════
+   ANIMATION: Panel fade-in
+   ═══════════════════════════════════════════ */
+@keyframes qa-fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+#quality-analyzer-panel {
+    animation: qa-fadeIn 0.3s ease-out;
+}

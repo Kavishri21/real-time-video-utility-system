@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn More — YouTube Quality Analyzer</title>
+    <link rel="stylesheet" href="learn.css">
+</head>
+<body>
+    <!-- Header -->
+    <header id="learn-header">
+        <div class="header-content">
+            <div class="header-left">
+                <span class="header-icon">📘</span>
+                <div>
+                    <h1 id="learn-title">Learn More</h1>
+                    <p id="learn-subtitle" class="header-subtitle">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Loading State -->
+    <div id="learn-loading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Fetching topic overview, roadmap & resources...</p>
+        <p class="loading-sub">Wikipedia API + Gemini AI + YouTube Search</p>
+    </div>
+
+    <!-- Main Content -->
+    <main id="learn-content" style="display:none;">
+
+        <!-- Section 1: Topic Overview -->
+        <section class="learn-section" id="section-overview">
+            <div class="section-header">
+                <span class="section-icon">📖</span>
+                <h2>Topic Overview</h2>
+            </div>
+            <div class="overview-card">
+                <img id="topic-image" class="topic-image" src="" alt="" style="display:none;">
+                <div class="overview-text">
+                    <h3 id="topic-title"></h3>
+                    <p id="topic-summary"></p>
+                    <a id="wiki-link" href="#" target="_blank" class="wiki-link" style="display:none;">
+                        Read more on Wikipedia →
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Related Videos -->
+        <section class="learn-section" id="section-videos">
+            <div class="section-header">
+                <span class="section-icon">🎥</span>
+                <h2>Related Videos + Quality Comparison</h2>
+            </div>
+            <div id="videos-grid" class="videos-grid">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- Section 3: Learning Roadmap -->
+        <section class="learn-section" id="section-roadmap">
+            <div class="section-header">
+                <span class="section-icon">🗺️</span>
+                <h2>Learning Roadmap</h2>
+                <span class="powered-badge">Powered by Gemini AI</span>
+            </div>
+            <div id="roadmap-container" class="roadmap-container">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- Section 4: Official Resources -->
+        <section class="learn-section" id="section-resources">
+            <div class="section-header">
+                <span class="section-icon">📚</span>
+                <h2>Official Resources</h2>
+                <span class="powered-badge">Powered by Gemini AI</span>
+            </div>
+            <div id="resources-list" class="resources-list">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="learn-footer">
+        <p>YouTube Content Quality Analyzer — Powered by Wikipedia API, Gemini AI & YouTube Data API</p>
+    </footer>
+
+    <script src="learn.js"></script>
+</body>
+</html>
