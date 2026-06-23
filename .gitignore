@@ -45,3 +45,11 @@ spring_boot_backend/.settings/
 # (Usually extension files are static and tracked, but avoid zip builds)
 chrome_extension/*.zip
 chrome_extension/*.crx
+
+# --- Local Reference Files (Not for GitHub) ---
+PROJECT_DOCUMENTATION.md
+implementation_plan.md
+learn_more_plan.md
+project_presentation_guide.md
+task.md
+
