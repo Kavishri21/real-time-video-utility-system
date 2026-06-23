@@ -5,10 +5,11 @@
 // ═══════════════════════════════════════════════════════════
 
 // --- Environment Configuration ---
-const IS_PRODUCTION = false; // Toggle to true when deploying/publishing
+const IS_PRODUCTION = true; // Toggle to true when deploying/publishing
 const BACKEND_BASE_URL = IS_PRODUCTION 
-    ? 'https://your-spring-backend-domain.onrender.com' // Replace with your Render Spring Boot URL
+    ? 'https://youtube-spring-backend.onrender.com' // Deployed Spring Boot URL on Render
     : 'http://localhost:8080';
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Read URL params
